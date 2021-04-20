@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.comulynx.wallet.rest.api.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,15 +30,18 @@ import com.comulynx.wallet.rest.api.util.AppUtils;
 @RequestMapping(AppUtils.BASE_URL+"/customers")
 public class CustomerController {
 
-	@Autowired
-	private CustomerRepository customerRepository;
-	@Autowired
-	private AccountRepository accountRepository;
+	private final CustomerService customerService;
+	private final AccountRepository accountRepository;
+
+	public CustomerController(CustomerService customerService, AccountRepository accountRepository){
+		this.customerService = customerService;
+		this.accountRepository = accountRepository;
+	}
 
 	/**
-	 * 
+	 *
 	 * Login
-	 * 
+	 *
 	 * @param request
 	 * @return
 	 */
@@ -56,14 +60,13 @@ public class CustomerController {
 
 	@GetMapping("/")
 	public List<Customer> getAllCustomers() {
-		return customerRepository.findAll();
+		return customerService.list();
 	}
 
 	@GetMapping("/{customerId}")
-	public ResponseEntity<Customer> getCustomerByCustomerId(@PathVariable(value = "customerId") String customerId)
+	public ResponseEntity<Customer> getCustomerByCustomerId(@PathVariable Long customerId)
 			throws ResourceNotFoundException {
-		Customer customer = customerRepository.findByCustomerId(customerId)
-				.orElseThrow(() -> new ResourceNotFoundException("Customer not found for this id :: " + customerId));
+		Customer customer =  customerService.findById(customerId);
 		return ResponseEntity.ok().body(customer);
 	}
 
@@ -82,7 +85,7 @@ public class CustomerController {
 			account.setBalance(0.0);
 			accountRepository.save(account);
 
-			return ResponseEntity.ok().body(customerRepository.save(customer));
+			return ResponseEntity.ok().body(customerService.create(customer));
 		} catch (Exception ex) {
 			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -90,25 +93,18 @@ public class CustomerController {
 	}
 
 	@PutMapping("/{customerId}")
-	public ResponseEntity<Customer> updateCustomer(@PathVariable(value = "customerId") String customerId,
-			@RequestBody Customer customerDetails) throws ResourceNotFoundException {
-		Customer customer = customerRepository.findByCustomerId(customerId)
-				.orElseThrow(() -> new ResourceNotFoundException("Customer not found for this id :: " + customerId));
+	public ResponseEntity<Customer> updateCustomer(@PathVariable Long customerId) throws ResourceNotFoundException {
 
-		customer.setEmail(customerDetails.getEmail());
-		customer.setLastName(customerDetails.getLastName());
-		customer.setFirstName(customerDetails.getFirstName());
-		final Customer updatedCustomer = customerRepository.save(customer);
+		Customer updatedCustomer = customerService.update(customerId);
+
 		return ResponseEntity.ok(updatedCustomer);
 	}
 
 	@DeleteMapping("/{customerId}")
-	public Map<String, Boolean> deleteCustomer(@PathVariable(value = "customerId") String customerId)
-			throws ResourceNotFoundException {
-		Customer customer = customerRepository.findByCustomerId(customerId)
-				.orElseThrow(() -> new ResourceNotFoundException("Customer not found for this id :: " + customerId));
+	public Map<String, Boolean> deleteCustomer(@PathVariable Long customerId) throws ResourceNotFoundException {
 
-		customerRepository.delete(customer);
+		customerService.delete(customerId);
+
 		Map<String, Boolean> response = new HashMap<>();
 		response.put("deleted", Boolean.TRUE);
 		return response;
@@ -117,11 +113,13 @@ public class CustomerController {
 	/**
 	 * generate a random but unique Account No (NB: Account No should be unique
 	 * in your accounts table)
-	 * 
+	 *
 	 */
 	private String generateAccountNo(String customerId) {
 		// TODO : Add logic here - generate a random but unique Account No (NB:
 		// Account No should be unique in the accounts table)
+
+		//try generating using uuid
 		return "";
 	}
 }
