@@ -71,7 +71,12 @@ public class CustomerController {
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<?> createCustomer(@RequestBody Customer customer) {
+	public ResponseEntity<?> createCustomer(@RequestBody Customer customer) throws Exception{
+		if (customer.getCustomerId() != null || customer.getEmail() != null ){
+			throw new Exception("Customer already exists");
+		}
+		else
+
 		try {
 			// TODO : Add logic to Hash Customer PIN here
 			// TODO : Add logic to check if Customer with provided username, or

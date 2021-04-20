@@ -5,19 +5,26 @@ import com.comulynx.wallet.rest.api.model.Customer;
 import com.comulynx.wallet.rest.api.repository.AccountRepository;
 import com.comulynx.wallet.rest.api.repository.CustomerRepository;
 import com.comulynx.wallet.rest.api.service.CustomerService;
+import com.comulynx.wallet.rest.api.service.security.HashService;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final AccountRepository accountRepository;
+    private final HashService hashService;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository, AccountRepository accountRepository) {
+    public CustomerServiceImpl(CustomerRepository customerRepository,
+                               AccountRepository accountRepository,
+                               HashService hashService) {
+
         this.customerRepository = customerRepository;
         this.accountRepository = accountRepository;
+        this.hashService = hashService;
     }
 
     @Override
@@ -31,7 +38,15 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer create(Customer customer) {
-        return null;
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        String encodedSalt = Base64.getEncoder().encodeToString(salt);
+        String hashedPin = hashService.getHashedValue(customer.getPin(), encodedSalt);
+
+        customer.setPin(hashedPin);
+
+        return customerRepository.save(customer);
     }
 
     @Override
