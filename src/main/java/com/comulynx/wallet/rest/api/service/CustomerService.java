@@ -4,14 +4,16 @@ import com.comulynx.wallet.rest.api.exception.ResourceNotFoundException;
 import com.comulynx.wallet.rest.api.model.Customer;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CustomerService {
-    Customer findById(Long customerId)throws ResourceNotFoundException;
+    Customer findByCustomerId(String customerId)throws ResourceNotFoundException;
     Customer create(Customer customer);
     List<Customer> list();
-    Customer update(Long customerId) throws ResourceNotFoundException;
-    void delete(Long customerId) throws ResourceNotFoundException;
+    Customer update(String customerId) throws ResourceNotFoundException;
+    void delete(String customerId) throws ResourceNotFoundException;
+
+    //should probably move this to account service
+    String generateAccountNo(String customerId) throws ResourceNotFoundException;
 
 
 }

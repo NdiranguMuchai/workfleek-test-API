@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.List;
+import java.util.Random;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -28,8 +29,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer findById(Long customerId) throws ResourceNotFoundException {
-        return customerRepository.findById(customerId)
+    public Customer findByCustomerId(String customerId) throws ResourceNotFoundException {
+        return customerRepository.findByCustomerId(customerId)
                 .orElseThrow(()->
                         new ResourceNotFoundException("Customer not found for this id :: " + customerId));
 
@@ -55,8 +56,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer update(Long customerId) throws ResourceNotFoundException {
-        Customer customer = customerRepository.findById(customerId)
+    public Customer update(String customerId) throws ResourceNotFoundException {
+        Customer customer = customerRepository.findByCustomerId(customerId)
                 .orElseThrow(()->
                         new ResourceNotFoundException("Customer not found for this id :: " + customerId));
 
@@ -68,11 +69,29 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void delete(Long customerId) throws ResourceNotFoundException {
-        customerRepository.findById(customerId)
+    public void delete(String customerId) throws ResourceNotFoundException {
+       Customer customer =  customerRepository.findByCustomerId(customerId)
                 .orElseThrow(()->
                         new ResourceNotFoundException("Customer not found for this id :: " + customerId));
 
-        customerRepository.deleteById(customerId);
+        customerRepository.delete(customer);
+    }
+
+    @Override
+    public String generateAccountNo(String customerId) throws ResourceNotFoundException {
+        customerRepository.findByCustomerId(customerId)
+                .orElseThrow(()->
+                        new ResourceNotFoundException("Customer not found for this id :: " + customerId));
+
+        int leftLimit = 48;
+        int rightLimit = 122;
+        int targetStringLength = 10;
+        Random random = new Random();
+
+        return random.ints(leftLimit, rightLimit + 1)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(targetStringLength)
+                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+                .toString();
     }
 }

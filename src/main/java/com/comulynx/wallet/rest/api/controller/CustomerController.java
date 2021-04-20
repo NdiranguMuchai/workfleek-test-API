@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.comulynx.wallet.rest.api.service.CustomerService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,7 +21,6 @@ import com.comulynx.wallet.rest.api.exception.ResourceNotFoundException;
 import com.comulynx.wallet.rest.api.model.Account;
 import com.comulynx.wallet.rest.api.model.Customer;
 import com.comulynx.wallet.rest.api.repository.AccountRepository;
-import com.comulynx.wallet.rest.api.repository.CustomerRepository;
 import com.comulynx.wallet.rest.api.util.AppUtils;
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -64,9 +62,9 @@ public class CustomerController {
 	}
 
 	@GetMapping("/{customerId}")
-	public ResponseEntity<Customer> getCustomerByCustomerId(@PathVariable Long customerId)
+	public ResponseEntity<Customer> getCustomerByCustomerId(@PathVariable String customerId)
 			throws ResourceNotFoundException {
-		Customer customer =  customerService.findById(customerId);
+		Customer customer =  customerService.findByCustomerId(customerId);
 		return ResponseEntity.ok().body(customer);
 	}
 
@@ -98,7 +96,7 @@ public class CustomerController {
 	}
 
 	@PutMapping("/{customerId}")
-	public ResponseEntity<Customer> updateCustomer(@PathVariable Long customerId) throws ResourceNotFoundException {
+	public ResponseEntity<Customer> updateCustomer(@PathVariable String customerId) throws ResourceNotFoundException {
 
 		Customer updatedCustomer = customerService.update(customerId);
 
@@ -106,7 +104,7 @@ public class CustomerController {
 	}
 
 	@DeleteMapping("/{customerId}")
-	public Map<String, Boolean> deleteCustomer(@PathVariable Long customerId) throws ResourceNotFoundException {
+	public Map<String, Boolean> deleteCustomer(@PathVariable String customerId) throws ResourceNotFoundException {
 
 		customerService.delete(customerId);
 
@@ -120,11 +118,11 @@ public class CustomerController {
 	 * in your accounts table)
 	 *
 	 */
-	private String generateAccountNo(String customerId) {
+	private String generateAccountNo(String customerId) throws Exception{
 		// TODO : Add logic here - generate a random but unique Account No (NB:
 		// Account No should be unique in the accounts table)
 
-		//try generating using uuid
-		return "";
+		return customerService.generateAccountNo(customerId);
+		
 	}
 }
