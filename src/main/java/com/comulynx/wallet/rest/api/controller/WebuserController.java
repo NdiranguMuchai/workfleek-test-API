@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.comulynx.wallet.rest.api.service.WebUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +28,13 @@ import com.comulynx.wallet.rest.api.util.AppUtils;
 @RequestMapping(AppUtils.BASE_URL+"/webusers")
 public class WebuserController {
 
-	@Autowired
-	private WebuserRepository webuserRepository;
+	private final WebuserRepository webuserRepository;
+	private final WebUserService webUserService;
 
+	public WebuserController(WebuserRepository webuserRepository, WebUserService webUserService){
+		this.webuserRepository = webuserRepository;
+		this.webUserService = webUserService;
+	}
 	@GetMapping("/")
 	public List<Webuser> getAllWebusers() {
 		return webuserRepository.findAll();
@@ -49,8 +54,9 @@ public class WebuserController {
 			// TODO : Add logic to check if Webuser with provided username, or
 			// email, or employeeId, or customerId exists.
 			// If exists, throw a Webuser with [?] exists Exception.
+			//  /** Handled in service layer **/
 
-			return ResponseEntity.ok().body(webuserRepository.save(webuser));
+			return ResponseEntity.ok().body(webUserService.create(webuser));
 		} catch (Exception ex) {
 			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
