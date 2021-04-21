@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.comulynx.wallet.rest.api.repository.CustomerRepository;
+import com.comulynx.wallet.rest.api.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,10 +32,15 @@ public class AccountController {
 
 	private final AccountRepository accountRepository;
 	private final CustomerRepository customerRepository;
+	private final AccountService accountService;
 
-	public AccountController(AccountRepository accountRepository, CustomerRepository customerRepository){
+	public AccountController(AccountRepository accountRepository,
+							 CustomerRepository customerRepository,
+							 AccountService accountService){
+
 		this.accountRepository = accountRepository;
 		this.customerRepository = customerRepository;
+		this.accountService = accountService;
 	}
 	@GetMapping("/")
 	public List<Account> getAllAccount() {
@@ -52,29 +58,24 @@ public class AccountController {
 		return ResponseEntity.ok().body(account);
 	}
 
-	@GetMapping("/balance")
-	public ResponseEntity<?> getAccountBalanceByCustomerIdAndAccountNo(@RequestBody String request)
+	@GetMapping("/balance/customerId/{customerId}/accountNo/{accountNo}")
+	public ResponseEntity<?> getAccountBalanceByCustomerIdAndAccountNo(@PathVariable String customerId,
+																	   @PathVariable String accountNo)
 			throws ResourceNotFoundException {
-		try {
-			JsonObject response = new JsonObject();
 
-			final JsonObject balanceRequest = gson.fromJson(request, JsonObject.class);
-			String customerId = balanceRequest.get("customerId").getAsString();
-			String accountNo = balanceRequest.get("accountNo").getAsString();
+		try {
 
 			// TODO : Add logic to find account balance by CustomerId And
-			// AccountNo
-			Account account = null;
+			// AccountNo  /** Handled in service layer **/
 
-			response.addProperty("balance", account.getBalance());
-			return ResponseEntity.ok().body(gson.toJson(response));
+			return ResponseEntity.ok().body(accountService.findBalance(customerId, accountNo));
 		} catch (Exception ex) {
 			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
 	}
 
-	@PostMapping("/")
+	@PostMapping("/create")
 	public Account createAccount(@RequestBody Account account) throws ResourceNotFoundException{
 
 		if (account.getCustomerId() == null){
