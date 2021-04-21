@@ -70,10 +70,7 @@ public class CustomerController {
 
 	@PostMapping("/create")
 	public ResponseEntity<?> createCustomer(@RequestBody Customer customer) throws Exception{
-		if (customer.getCustomerId() != null || customer.getEmail() != null ){
-			throw new Exception("Customer already exists");
-		}
-		else
+
 
 		try {
 			// TODO : Add logic to Hash Customer PIN here
@@ -81,14 +78,16 @@ public class CustomerController {
 			// customerId exists. If exists, throw a Customer with [?] exists
 			// Exception.
 
-			String accountNo = generateAccountNo(customer.getCustomerId());
-			Account account = new Account();
-			account.setCustomerId(customer.getCustomerId());
-			account.setAccountNo(accountNo);
-			account.setBalance(0.0);
-			accountRepository.save(account);
 
-			return ResponseEntity.ok().body(customerService.create(customer));
+//				String accountNo = generateAccountNo(customer.getCustomerId());
+//				Account account = new Account();
+//				account.setCustomerId(customer.getCustomerId());
+//				account.setAccountNo(accountNo);
+//				account.setBalance(0.0);
+//				accountRepository.save(account);
+
+				return ResponseEntity.ok().body(customerService.create(customer));
+
 		} catch (Exception ex) {
 			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -123,6 +122,6 @@ public class CustomerController {
 		// Account No should be unique in the accounts table)
 
 		return customerService.generateAccountNo(customerId);
-		
+
 	}
 }

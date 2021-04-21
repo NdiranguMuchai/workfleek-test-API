@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CustomerService {
     Customer findByCustomerId(String customerId)throws ResourceNotFoundException;
-    Customer create(Customer customer);
+    Customer create(Customer customer) ;
     List<Customer> list();
     Customer update(String customerId) throws ResourceNotFoundException;
     void delete(String customerId) throws ResourceNotFoundException;

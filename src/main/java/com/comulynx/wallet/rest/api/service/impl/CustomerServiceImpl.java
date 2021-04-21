@@ -1,6 +1,7 @@
 package com.comulynx.wallet.rest.api.service.impl;
 
 import com.comulynx.wallet.rest.api.exception.ResourceNotFoundException;
+import com.comulynx.wallet.rest.api.model.Account;
 import com.comulynx.wallet.rest.api.model.Customer;
 import com.comulynx.wallet.rest.api.repository.AccountRepository;
 import com.comulynx.wallet.rest.api.repository.CustomerRepository;
@@ -30,15 +31,22 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer findByCustomerId(String customerId) throws ResourceNotFoundException {
-        return customerRepository.findByCustomerId(customerId)
+         Customer customer = customerRepository.findByCustomerId(customerId)
                 .orElseThrow(()->
                         new ResourceNotFoundException("Customer not found for this id :: " + customerId));
 
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        String encodedSalt = Base64.getEncoder().encodeToString(salt);
 
+         customer.setPin(hashService.getHashedValue(customer.getPin(), encodedSalt));
+
+         return customer;
     }
 
     @Override
-    public Customer create(Customer customer) {
+    public Customer create(Customer customer){
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];
         random.nextBytes(salt);
@@ -52,6 +60,16 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public List<Customer> list() {
+        List<Customer> customerList = customerRepository.findAll();
+
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        String encodedSalt = Base64.getEncoder().encodeToString(salt);
+
+        customerList.forEach(customer ->
+                customer.setPin(hashService.getHashedValue(customer.getPin(), encodedSalt)));
+
         return customerRepository.findAll();
     }
 

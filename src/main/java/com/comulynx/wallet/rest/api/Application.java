@@ -13,5 +13,8 @@ public class Application {
 	
 
 	// TODO : Add BCryptPasswordEncoder bean here
-
+@Bean
+	public BCryptPasswordEncoder bCryptPasswordEncoder(){
+		return new BCryptPasswordEncoder();
+}
 }
