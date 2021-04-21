@@ -4,6 +4,7 @@ import com.comulynx.wallet.rest.api.exception.ResourceNotFoundException;
 import com.comulynx.wallet.rest.api.model.Webuser;
 import com.comulynx.wallet.rest.api.repository.WebuserRepository;
 import com.comulynx.wallet.rest.api.service.WebUserService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -12,9 +13,11 @@ import java.util.List;
 @Service
 public class WebUserServiceImpl implements WebUserService {
     private final WebuserRepository webuserRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public WebUserServiceImpl(WebuserRepository webuserRepository) {
+    public WebUserServiceImpl(WebuserRepository webuserRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.webuserRepository = webuserRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
@@ -26,6 +29,10 @@ public class WebUserServiceImpl implements WebUserService {
                 webuser.getEmployeeId())){
             throw new Exception("Web user already exists");
         }
+        String encodedPassword= bCryptPasswordEncoder.encode(webuser.getPassword());
+
+        webuser.setPassword(encodedPassword);;
+
 
         return webuserRepository.save(webuser);
     }
