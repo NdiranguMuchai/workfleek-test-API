@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.comulynx.wallet.rest.api.exception.ResourceNotFoundException;
-import com.comulynx.wallet.rest.api.model.Account;
 import com.comulynx.wallet.rest.api.model.Customer;
 import com.comulynx.wallet.rest.api.repository.AccountRepository;
 import com.comulynx.wallet.rest.api.util.AppUtils;
@@ -29,11 +28,9 @@ import com.comulynx.wallet.rest.api.util.AppUtils;
 public class CustomerController {
 
 	private final CustomerService customerService;
-	private final AccountRepository accountRepository;
 
-	public CustomerController(CustomerService customerService, AccountRepository accountRepository){
+	public CustomerController(CustomerService customerService){
 		this.customerService = customerService;
-		this.accountRepository = accountRepository;
 	}
 
 	/**
@@ -78,13 +75,6 @@ public class CustomerController {
 			// customerId exists. If exists, throw a Customer with [?] exists
 			// Exception.   /** Handled in the service layer **/
 
-
-//				String accountNo = generateAccountNo(customer.getCustomerId());
-//				Account account = new Account();
-//				account.setCustomerId(customer.getCustomerId());
-//				account.setAccountNo(accountNo);
-//				account.setBalance(0.0);
-//				accountRepository.save(account);
 
 				return ResponseEntity.ok().body(customerService.create(customer));
 

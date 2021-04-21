@@ -1,11 +1,8 @@
 package com.comulynx.wallet.rest.api.controller;
 
 import java.util.List;
-import java.util.Random;
 
-import com.comulynx.wallet.rest.api.repository.CustomerRepository;
 import com.comulynx.wallet.rest.api.service.AccountService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -31,15 +28,12 @@ public class AccountController {
 	private Gson gson = new Gson();
 
 	private final AccountRepository accountRepository;
-	private final CustomerRepository customerRepository;
 	private final AccountService accountService;
 
 	public AccountController(AccountRepository accountRepository,
-							 CustomerRepository customerRepository,
 							 AccountService accountService){
 
 		this.accountRepository = accountRepository;
-		this.customerRepository = customerRepository;
 		this.accountService = accountService;
 	}
 	@GetMapping("/")
@@ -61,7 +55,7 @@ public class AccountController {
 	@GetMapping("/balance/customerId/{customerId}/accountNo/{accountNo}")
 	public ResponseEntity<?> getAccountBalanceByCustomerIdAndAccountNo(@PathVariable String customerId,
 																	   @PathVariable String accountNo)
-			throws ResourceNotFoundException {
+			{
 
 		try {
 
