@@ -24,5 +24,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 	// @Query("?")
 	// List<Customer> findAllCustomersWhoseEmailContainsGmail();
 
-	Boolean existsByCustomerIdAndFirstName(String customerId, String firstName);
+	Boolean existsByCustomerIdOrEmail(String customerId, String email);
 }

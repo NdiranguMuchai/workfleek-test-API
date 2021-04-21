@@ -46,16 +46,22 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer create(Customer customer){
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
-        String encodedSalt = Base64.getEncoder().encodeToString(salt);
-        String hashedPin = hashService.getHashedValue(customer.getPin(), encodedSalt);
+    public Customer create(Customer customer) throws Exception{
+       if (customerRepository.existsByCustomerIdOrEmail(customer.getCustomerId(), customer.getEmail())){
+           throw new Exception("Customer already exists.");
+       }
+       else {
 
-        customer.setPin(hashedPin);
+           SecureRandom random = new SecureRandom();
+           byte[] salt = new byte[16];
+           random.nextBytes(salt);
+           String encodedSalt = Base64.getEncoder().encodeToString(salt);
+           String hashedPin = hashService.getHashedValue(customer.getPin(), encodedSalt);
 
-        return customerRepository.save(customer);
+           customer.setPin(hashedPin);
+
+           return customerRepository.save(customer);
+       }
     }
 
     @Override

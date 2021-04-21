@@ -76,7 +76,7 @@ public class CustomerController {
 			// TODO : Add logic to Hash Customer PIN here
 			// TODO : Add logic to check if Customer with provided username, or
 			// customerId exists. If exists, throw a Customer with [?] exists
-			// Exception.
+			// Exception.   /** Handled in the service layer **/
 
 
 //				String accountNo = generateAccountNo(customer.getCustomerId());
