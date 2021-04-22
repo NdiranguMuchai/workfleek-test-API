@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface TransactionService {
     List <Transaction>getMiniStatement(String customerId, String accountNo, Pageable pageable) ;
 
-    Optional<List<Transaction>> findMiniStatement(String customerId, String accountNo);
+    Optional<List<Transaction>> findMiniStatement(String customerId, String accountNo, Pageable pageable);
 }

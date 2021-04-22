@@ -76,7 +76,8 @@ public class TransactionController {
 			String accountNo = balanceRequest.get("accountNo").getAsString();
 
 			
-			Optional<List<Transaction>> miniStatement = transactionService.findMiniStatement(customerId, accountNo);
+			Optional<List<Transaction>> miniStatement = transactionService
+					.findMiniStatement(customerId, accountNo, PageRequest.of(0,5));
 
 			List<Transaction> miniStatementList = transactionService
 					.getMiniStatement(customerId, accountNo, PageRequest.of(0,5));

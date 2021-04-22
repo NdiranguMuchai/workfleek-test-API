@@ -28,7 +28,8 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
 	// TODO : Change below function to return Optional<List<Transaction>>
 	@Query("SELECT t FROM Transaction t WHERE t.customerId =:customerId AND t.accountNo =:accountNo ORDER BY t.id DESC")
 	Optional<List<Transaction>> getMiniStatementUsingCustomerIdAndAccountNo(@Param("customerId") String customerId,
-																			@Param("accountNo") String accountNo);
+																			@Param("accountNo") String accountNo,
+																			Pageable pageable);
 
 	//Performs the same function as method above
 	List<Transaction>findByCustomerIdAndAccountNoOrderByIdDesc(String customerId, String accountNo, Pageable pageable);

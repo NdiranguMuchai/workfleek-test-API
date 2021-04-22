@@ -24,7 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Optional<List<Transaction>> findMiniStatement(String customerId, String accountNo) {
-        return transactionRepository.getMiniStatementUsingCustomerIdAndAccountNo(customerId, accountNo);
+    public Optional<List<Transaction>> findMiniStatement(String customerId, String accountNo, Pageable pageable) {
+        return transactionRepository.getMiniStatementUsingCustomerIdAndAccountNo(customerId, accountNo, PageRequest.of(0,5));
     }
 }
