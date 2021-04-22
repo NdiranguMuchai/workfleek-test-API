@@ -1,8 +1,11 @@
 package com.comulynx.wallet.rest.api.controller;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.comulynx.wallet.rest.api.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,9 +29,14 @@ import com.google.gson.JsonObject;
 public class TransactionController {
 	private Gson gson = new Gson();
 
-	@Autowired
-	private TransactionRepository transactionRepository;
+	private final TransactionRepository transactionRepository;
+	private final TransactionService transactionService;
 
+	public TransactionController(TransactionRepository transactionRepository,
+								 TransactionService transactionService){
+		this.transactionRepository = transactionRepository;
+		this.transactionService = transactionService;
+	}
 	@GetMapping("/")
 	public List<Transaction> getAllTransaction() {
 		return transactionRepository.findAll();
@@ -68,9 +76,13 @@ public class TransactionController {
 			String accountNo = balanceRequest.get("accountNo").getAsString();
 
 			
-			List<Transaction> miniStatement = transactionRepository
-					.getMiniStatementUsingCustomerIdAndAccountNo(customerId, accountNo);
+			Optional<List<Transaction>> miniStatement = transactionService.findMiniStatement(customerId, accountNo);
 
+			List<Transaction> miniStatementList = transactionService
+					.getMiniStatement(customerId, accountNo, PageRequest.of(0,5));
+
+
+//			return ResponseEntity.ok().body(gson.toJson(miniStatementList));
 			return ResponseEntity.ok().body(gson.toJson(miniStatement));
 		} catch (Exception ex) {
 			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
